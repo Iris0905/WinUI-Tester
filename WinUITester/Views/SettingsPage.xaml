@@ -1,0 +1,186 @@
+﻿<Page
+    x:Class="WinUITester.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:WinUITester.Models"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    mc:Ignorable="d"
+    xmlns:enums="using:WinUITester.Enums"
+    xmlns:converter="using:WinUITester.Converter"
+    xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <DataTemplate x:Key="InstrumentListViewTemplate" x:DataType="models:Instrument">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Ellipse Grid.Column="0" 
+                         Width ="30"
+                         Height="30"
+                         Margin="10"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
+                         Fill="#9E9E9E">
+                    <interactivity:Interaction.Behaviors>
+                        <core:DataTriggerBehavior Binding="{x:Bind State, Converter={StaticResource InstrumentStateToStringConverter}, Mode=OneWay}" 
+                                                  ComparisonCondition="Equal" 
+                                                  Value="{x:Bind enums:InstrumentState.Running, Converter={StaticResource InstrumentStateToStringConverter}, Mode=OneWay}">
+                            <core:ChangePropertyAction PropertyName="Fill" Value="#388E3C"/>
+                        </core:DataTriggerBehavior>
+                        <core:DataTriggerBehavior Binding="{x:Bind State, Converter={StaticResource InstrumentStateToStringConverter}, Mode=OneWay}" 
+                                                  ComparisonCondition="Equal" 
+                                                  Value="{x:Bind enums:InstrumentState.Error, Converter={StaticResource InstrumentStateToStringConverter}, Mode=OneWay}">
+                            <core:ChangePropertyAction PropertyName="Fill" Value="#D32F2F"/>
+                        </core:DataTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </Ellipse>
+                <TextBlock Grid.Column="1"
+                           Text="{x:Bind Name}"
+                           Style="{ThemeResource BaseTextBlockStyle}"
+                           VerticalAlignment="Center"
+                           FontSize="14"
+                           Margin="20,0"/>
+            </Grid>
+        </DataTemplate>
+
+        <converter:InstrumentStateToStringConverter x:Key="InstrumentStateToStringConverter"/>
+
+        <Style x:Key="ColumnNameStyle" 
+               TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="ColumnContentStyle" 
+               TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="0, 10"></Setter>
+        </Style>
+    </Page.Resources>
+
+    <Pivot Title="Settings">
+        <PivotItem Header="Users">
+            <TextBlock Text="Show users here" 
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+        </PivotItem>
+        <PivotItem Header="Instruments">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <ListView Grid.Column="0"
+                          ItemTemplate="{StaticResource InstrumentListViewTemplate}"
+                          CanDragItems="True"
+                          CanReorderItems="True"
+                          AllowDrop="True"
+                          SelectionMode="Single"
+                          BorderThickness="1"
+                          BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
+                          DragOver="List_DragOver"
+                          Drop="List_Drop"
+                          Margin="50"
+                          ItemsSource="{x:Bind ViewModel.Instruments}"
+                          SelectedItem="{x:Bind ViewModel.SelectedInstrument, Mode=TwoWay}"/>
+
+                <Grid Grid.Column="1"
+                      Margin="50"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                               Text="Instrument Information"
+                               Style="{StaticResource TitleTextBlockStyle}"
+                               Margin="20"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Style="{StaticResource ColumnNameStyle}"
+                               Text="Name: "/>
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Style="{StaticResource ColumnNameStyle}"
+                               Text="State: "/>
+                    <TextBlock Grid.Row="3" Grid.Column="0"
+                               Style="{StaticResource ColumnNameStyle}"
+                               Text="Description: "/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Style="{StaticResource ColumnContentStyle}"
+                               Text="{x:Bind ViewModel.SelectedInstrument.Name, Mode=OneWay}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1"
+                               Style="{StaticResource ColumnContentStyle}"
+                               Text="{x:Bind ViewModel.SelectedInstrument.State, Converter={StaticResource InstrumentStateToStringConverter}, Mode=OneWay}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1"
+                               Style="{StaticResource ColumnContentStyle}"
+                               Text="{x:Bind ViewModel.SelectedInstrument.Description, Mode=OneWay}"/>
+                </Grid>
+            </Grid>
+        </PivotItem>
+        <PivotItem Header="LIS">
+            <TextBlock Text="LIS configuration" 
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+        </PivotItem>
+        <PivotItem Header="Other">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="4*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Style="{StaticResource ColumnNameStyle}"
+                           Text="Language"/>
+                <StackPanel Grid.Row="0" Grid.Column="1"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left">
+                    <ComboBox ItemsSource="{x:Bind ViewModel.Languages}"
+                              SelectedItem="{x:Bind ViewModel.SelectedLanguage, Mode=TwoWay}"
+                              VerticalAlignment="Center"
+                              Width="100"/>
+                    <Button Width="50"
+                            Margin="20, 50"
+                            Command="{x:Bind ViewModel.SaveLanguageCommand, Mode=OneWay}">
+                        <SymbolIcon Symbol="Save"/>
+                    </Button>
+                </StackPanel>
+
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Style="{StaticResource ColumnNameStyle}"
+                           Text="Dark Theme"/>
+                <ToggleSwitch Grid.Row="1" Grid.Column="1"
+                              OnContent="On"
+                              OffContent="Off"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              IsOn="{x:Bind ViewModel.IsDarkThemeOn, Mode=TwoWay}"/>
+            </Grid>
+        </PivotItem>
+    </Pivot>
+
+</Page>

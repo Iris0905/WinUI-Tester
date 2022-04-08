@@ -1,0 +1,16 @@
+﻿<Grid x:Class="WinUITester.Views.SplashView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      HorizontalAlignment="Stretch"
+      VerticalAlignment="Stretch"
+      Background="#1E88E5"
+      mc:Ignorable="d">
+    <StackPanel Orientation="Vertical">
+        <TextBlock Text="Preparing..."
+                   Style="{StaticResource TitleTextBlockStyle}"/>
+        <ProgressRing IsActive="True" 
+                      Margin="50"/>
+    </StackPanel>
+</Grid>
